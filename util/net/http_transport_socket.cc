@@ -332,23 +332,38 @@ bool WriteRequest(Stream* stream,
                   const HTTPHeaders& headers,
                   HTTPBodyStream* body_stream) {
   std::string request_line = base::StringPrintf(
-      "%s %s HTTP/1.0\r\n", method.c_str(), resource.c_str());
+      "%s %s HTTP/1.1\r\n", method.c_str(), resource.c_str());
   if (!stream->LoggingWrite(request_line.data(), request_line.size()))
     return false;
 
   // Write headers, and determine if Content-Length has been specified.
   bool chunked = true;
   size_t content_length = 0;
+  bool has_host = false;
+
   for (const auto& header : headers) {
-    std::string header_str = base::StringPrintf(
-        "%s: %s\r\n", header.first.c_str(), header.second.c_str());
     if (header.first == kContentLength) {
       chunked = !base::StringToSizeT(header.second, &content_length);
       DCHECK(!chunked);
     }
 
+    if (header.first == "Host") {
+      has_host = true;
+    }
+
+    std::string header_str = base::StringPrintf(
+        "%s: %s\r\n", header.first.c_str(), header.second.c_str());
     if (!stream->LoggingWrite(header_str.data(), header_str.size()))
       return false;
+  }
+
+  // HTTP/1.1 requires Host header
+  if (!has_host) {
+    /// TODO(ab): use proper hostname?
+    static constexpr const char kDefaultHost[] = "Host: localhost\r\n";
+    if (!stream->LoggingWrite(kDefaultHost, strlen(kDefaultHost))) {
+      return false;
+    }
   }
 
   // If no Content-Length, then encode as chunked, so add that header too.
