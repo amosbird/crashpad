@@ -402,9 +402,9 @@ bool CrashpadClient::StartHandler(
   }
 
   pid_t handler_pid = -1;
-  if (!IsRegularFile(base::FilePath("/proc/sys/kernel/yama/ptrace_scope"))) {
-    handler_pid = 0;
-  }
+  // if (!IsRegularFile(base::FilePath("/proc/sys/kernel/yama/ptrace_scope"))) {
+  //   handler_pid = 0;
+  // }
 
   auto signal_handler = RequestCrashDumpHandler::Get();
   return signal_handler->Initialize(
