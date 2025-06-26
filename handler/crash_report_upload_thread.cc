@@ -142,16 +142,16 @@ void CrashReportUploadThread::ProcessPendingReport(
 
   Settings* const settings = database_->GetSettings();
 
-  bool uploads_enabled;
-  if (!report.upload_explicitly_requested &&
-      (!settings->GetUploadsEnabled(&uploads_enabled) || !uploads_enabled)) {
-    // Don’t attempt an upload if there’s no URL to upload to. Allow upload if
-    // it has been explicitly requested by the user, otherwise, respect the
-    // upload-enabled state stored in the database’s settings.
-    database_->SkipReportUpload(report.uuid,
-                                Metrics::CrashSkippedReason::kUploadsDisabled);
-    return;
-  }
+  // bool uploads_enabled;
+  // if (!report.upload_explicitly_requested &&
+  //     (!settings->GetUploadsEnabled(&uploads_enabled) || !uploads_enabled)) {
+  //   // Don’t attempt an upload if there’s no URL to upload to. Allow upload if
+  //   // it has been explicitly requested by the user, otherwise, respect the
+  //   // upload-enabled state stored in the database’s settings.
+  //   database_->SkipReportUpload(report.uuid,
+  //                               Metrics::CrashSkippedReason::kUploadsDisabled);
+  //   return;
+  // }
 
   // This currently implements very simplistic rate-limiting, compatible with
   // the Breakpad client, where the strategy is to permit one upload attempt per
